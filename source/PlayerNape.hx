@@ -67,17 +67,9 @@ class PlayerNape extends FlxObject
 		var tocaPiso:Bool;
 		var tocaPlataforma:Bool;
 		
-		
-		
-		
-		//MARTIN
 		var agarre:Bool;
 		var trepar:Bool;
-		//MARTIN
-		
-		
-		
-		
+	
 		var tocaPlataformaIzq:Bool;	
 		var topeY:Float;
 		var topeX:Float;
@@ -424,7 +416,6 @@ class PlayerNape extends FlxObject
 		
 	}
 	
-	
 	function subirPlataforma():Void {
 		
 		// para que no se pase cuando sube el punto de agarre
@@ -455,7 +446,6 @@ class PlayerNape extends FlxObject
 		}
 	}
 	
-	//MARTIN
 	function movimientos():Void {
 		
 		
@@ -507,8 +497,6 @@ class PlayerNape extends FlxObject
 			onOffJoints();
 		}
 	}
-	
-	//MARTIN
 	
 	function calcularEstados():Void 	{
 		
