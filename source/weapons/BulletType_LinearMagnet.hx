@@ -44,7 +44,7 @@ class BulletType_LinearMagnet extends FlxSprite
 	var radio:Float;
 	var debugText:TextTimer;
 	
-	
+	// TAREA: NORMAL BULLET CON EL BOTON DERECHO SE VUELVE UN CAMPO MAGNETICO. VER.
 	public function new(x:Float = 0, y:Float = 0, angle:Float, _radio:Float)	{
 		
 		super(x, y, AssetPaths.bullet_path);

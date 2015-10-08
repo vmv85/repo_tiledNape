@@ -330,8 +330,8 @@ class PlayerNape extends FlxObject
 				b.camp();				
 			}
 		);
-		// bodyBullet.userData.nombre = "magnet_bullet";
-		//bodyBullet.cbTypes.add(Callbacks.bulletMagnetCallback);		
+		
+		// Si el objeto rectangular toca el magneto deja de rotar
 		GameListeners.MagnetWithObstaculoRectangular = new InteractionListener(
 			CbEvent.ONGOING, InteractionType.COLLISION, Callbacks.bulletMagnetCallback, Callbacks.objetoRectangularCallback,
 			function onMagnetWithObstaculoRectangular(e:InteractionCallback):Void {
@@ -346,6 +346,7 @@ class PlayerNape extends FlxObject
 			}
 		);
 		
+		// Si el objeto rectangular toca el magneto rota nuevamente
 		GameListeners.MagnetWithObstaculoRectangularOff = new InteractionListener(
 			CbEvent.END, InteractionType.COLLISION, Callbacks.bulletMagnetCallback, Callbacks.objetoRectangularCallback,
 			function onMagnetWithObstaculoRectangular(e:InteractionCallback):Void {

@@ -116,7 +116,8 @@ class BulletType_Magnet extends FlxSprite
 					
 						
 							gravityPoint.position.set(body.position);
-							var distance = Geom.distanceBody(planet, gravityPoint, closestA, closestB);
+							FlxG.log.add("body local center : " + body.localCOM.x + " - " + body.localCOM.y );
+							var distance:Float = Geom.distanceBody(planet, gravityPoint, closestA, closestB);
 							
 							// Cut gravity off, well before distance threshold.
 							if (distance > radio) {
@@ -124,30 +125,31 @@ class BulletType_Magnet extends FlxSprite
 							}
 							
 							// Gravitational force.
-							var force = closestA.sub(body.position, true);
+							var force = closestA.sub(new Vec2(body.position.x + body.localCOM.x, body.position.y + body.localCOM.y ), true);
 							
-							if (distance <= body.bounds.width*0.25) {
-								
-								force.length = force.length * 10;
+							if (distance <= body.bounds.width*0.75) {
+								FlxG.log.add("distance :" +  distance);	
+								force.length = 0;
+								body.velocity.x = body.velocity.y = 0;
+								body.allowRotation = false;
 							}else {
 								// We don't use a true description of gravity, as it doesn't 'play' as nice.
-							
+								body.allowRotation = true;
 								force.length = body.mass * 1e6 / (distance * distance) ;	
 							}
 							
-							FlxG.log.add("force.length: " + force.length);
+							
 							
 							//FlxG.log.add("body.mass * 1e6: " +body.mass * 1e6);
-							//FlxG.log.add("distance * distance: "+ distance * distance);
+							
 				 
 							// Impulse to be applied = force * deltaTime
 							body.applyImpulse(
 								/*impulse*/ force.muleq(dt),
 								/*position*/ null, // implies body.position
-								/*sleepable*/ true
+								/*sleepable*/ false
 							);
-						
-							
+
 				}
 				closestA.dispose();
 				closestB.dispose();

@@ -17,7 +17,17 @@ class PlataformaVertical extends ObjetoBase
 		b.userData.object = this;
 	}
 	
-	override public function activatedBehaviour():Void {
+	override public function update():Void {
+		
+		
+		if (activado) {
+			behaviour();
+		}
+		
+		super.update();
+	}
+	
+	function behaviour():Void {
 		FlxG.log.add("plataforma activada");
 		this.b.position.y += 100*FlxG.elapsed;	
 	}

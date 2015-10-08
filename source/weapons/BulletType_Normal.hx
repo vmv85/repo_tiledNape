@@ -53,7 +53,6 @@ class BulletType_Normal extends FlxSprite
 		bodyBullet.space = FlxNapeState.space;
 		bodyBullet.userData.object = this;
 		bodyBullet.userData.nombre = "normal bullet";
-		bodyBullet.cbTypes.add(Callbacks.magnetObjectCallback);
 		Globales.bodyList_typeMagnet.add(bodyBullet);
 		bodyBullet.cbTypes.add(Callbacks.bulletNormalCallback);
 	
@@ -71,12 +70,25 @@ class BulletType_Normal extends FlxSprite
 	override public function update() {
 		super.update();
 		
+		if (FlxG.mouse.justPressedRight) {
+				
+			var pos:Vec2  = new Vec2(bodyBullet.position.x, bodyBullet.position.y);
+			FlxNapeState.space.bodies.remove(this.bodyBullet);
+			bodyBullet = new Body(BodyType.STATIC, pos);
+			bodyBullet.shapes.add(shapeBullet);
+			bodyBullet.userData.object = this;
+			bodyBullet.userData.nombre = "normal bullet";
+			bodyBullet.space = FlxNapeState.space;
+			Globales.bodyList_typeMagnet.add(bodyBullet);
+			bodyBullet.cbTypes.add(Callbacks.bulletNormalCallback);
+			
+		}
+		
+		
 		// se adapta el sprite al body
 		this.x = bodyBullet.position.x - this._halfWidth ;
 		this.y = bodyBullet.position.y - this._halfHeight;
-		
-
-		
+				
 		if (bodyBullet.position.x > FlxG.worldBounds.width || bodyBullet.position.y > FlxG.worldBounds.height || this.x < 0 || this.y < 0 ){ //|| bodyBullet.isSleeping ) {
 			this.destroy();
 		}
@@ -86,3 +98,4 @@ class BulletType_Normal extends FlxSprite
 	
 	
 	
+

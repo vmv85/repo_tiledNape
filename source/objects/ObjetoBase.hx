@@ -1,5 +1,6 @@
 package objects;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import nape.phys.Body;
 
@@ -7,17 +8,18 @@ import nape.phys.Body;
  * ...
  * @author ...
  */
-class ObjetoBase extends FlxSprite
+class ObjetoBase extends FlxObject
 {
 	var b:Body;
 	var magneticed:Bool;
 	var tieneDetonador:Bool;
 	var id:String;
+	var linked_id:String;
 	var activado: Bool;
 	
 	public function new(x:Float,y:Float, _id:String ) 
 	{
-		super(x, y, null);
+		super(x, y);
 		tieneDetonador = false;
 		magneticed = false;		
 		activado = false;
@@ -39,11 +41,6 @@ class ObjetoBase extends FlxSprite
 	}
 	
 	override public function update():Void {
-		
-		
-		if (activado) {
-			activatedBehaviour();
-		}
 		
 		super.update();
 	}

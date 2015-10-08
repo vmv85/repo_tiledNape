@@ -680,7 +680,7 @@
     <property name="userDataBody" value="piso"/>
     <property name="userDataShape" value="shape_piso"/>
    </properties>
-   <polygon points="-696,41.3334 -733.333,8.33337 -540.333,28.3333"/>
+   <polygon points="-696,41.3334 -733.333,8.33337 -540.5,21.5"/>
   </object>
   <object id="68" name="piso" type="poligono" x="1886.5" y="527">
    <properties>
@@ -692,7 +692,7 @@
     <property name="userDataBody" value="piso"/>
     <property name="userDataShape" value="shape_piso"/>
    </properties>
-   <polygon points="-468.5,50.8334 -733.333,8.33337 -444.833,0.833337"/>
+   <polygon points="-468.5,50.8334 -734.5,1 -444.833,0.833337"/>
   </object>
   <object id="76" name="circuloAgarre" type="agarre" x="579.836" y="529.663" width="15" height="15">
    <properties>
@@ -991,14 +991,13 @@
     <property name="bodyType" value="kinematic"/>
     <property name="esRompible" value="0"/>
     <property name="esSensor" value="0"/>
-    <property name="gid" value="124"/>
     <property name="material" value="acero"/>
     <property name="puedeRotar" value="0"/>
     <property name="userDataBody" value="platV"/>
     <property name="userDataShape" value="shape_platV"/>
    </properties>
   </object>
-  <object id="125" name="detonador" type="detonador" x="1147" y="516" width="64.5" height="16">
+  <object id="125" name="detonador" type="detonador" x="1175" y="507.333" width="64.5" height="16">
    <properties>
     <property name="bodyType" value="kinematic"/>
     <property name="esRompible" value="0"/>
@@ -1010,7 +1009,7 @@
     <property name="userDataShape" value="shape_deto"/>
    </properties>
   </object>
-  <object id="126" name="obstaculoCuadrado" type="obstaculoCuadrado" x="1142" y="434.5" width="76" height="80">
+  <object id="126" name="obstaculoCuadrado" type="obstaculoCuadrado" x="1186.33" y="464.167" width="40" height="40">
    <properties>
     <property name="bodyType" value="dynamic"/>
     <property name="esRompible" value="0"/>

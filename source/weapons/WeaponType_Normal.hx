@@ -37,6 +37,7 @@ class WeaponType_Normal extends WeaponBase
 				puedeDisparar = true;	
 			}			
 		}	
+		
 
 	}
 	
