@@ -27,6 +27,8 @@ import flash.events.MouseEvent;
 import flash.events.Event;
 import flixel.util.FlxAngle;
 import flixel.util.FlxMath;
+import objects.Detonador;
+import objects.ObstaculoCuadrado;
 import openfl.display.BitmapData;
 import flixel.util.FlxColor;
 import utils.*;
@@ -42,8 +44,12 @@ import weapons.BulletType_Normal;
  * ...
  * @author ...
  */
- 
- // test
+
+/*	TAREA: No limitar velocidad en Y asi se puede calcular caida. Y posible muerte :P*/
+/*	TAREA: Hacer ventana de muerte con posibilidad de restart o salir */
+/*	TAREA: detectar el puntero del mouse esta encima del player para que no pueda disparar (crear bodyes dentro de bodyes siempre
+ * genera que las colisiones se comporten raro). */
+
 class PlayerNape extends FlxObject
 {
 	// Tiene 3 bodies, asi le podemos asignar diferentes comportamientos a cada uno
@@ -96,6 +102,7 @@ class PlayerNape extends FlxObject
 		
 		private static inline var maxVelX:Int = 200;
 		private static inline var jumpForce:Int = 1200;//ESTO
+		private static inline var xImpulse:Int = 75;
 		
 		public var currentWeapon:FlxObject = null;
 		
@@ -306,6 +313,7 @@ class PlayerNape extends FlxObject
 				var bmagnet:Body = e.int1.castBody;
 				var body:Body = e.int2.castBody;
 				
+				// Punto de colision en c.x y c.y 
 				e.arbiters.at(0).collisionArbiter.contacts.foreach(function(c:Contact) {
 					FlxG.log.add(e.int1.castBody.userData.nombre + "- " + e.int2.castBody.userData.nombre +  " x: " + c.position.x +  " y: " + c.position.y);
 				});						
@@ -317,15 +325,51 @@ class PlayerNape extends FlxObject
 			CbEvent.BEGIN, InteractionType.SENSOR, Callbacks.linearmagnetObjectCallback, Callbacks.escenarioCallback,
 			function onBulletLinearMagnetWithWorld(e:InteractionCallback):Void {
 				var blinearmagnet:Body = e.int1.castBody;
-				var body:Body = e.int2.castBody;
-				FlxG.log.add("linear magnet collide with world");
+				//var body:Body = e.int2.castBody;
 				var b: BulletType_LinearMagnet = cast(blinearmagnet.userData.object, BulletType_LinearMagnet);
 				b.camp();				
 			}
 		);
+		// bodyBullet.userData.nombre = "magnet_bullet";
+		//bodyBullet.cbTypes.add(Callbacks.bulletMagnetCallback);		
+		GameListeners.MagnetWithObstaculoRectangular = new InteractionListener(
+			CbEvent.ONGOING, InteractionType.COLLISION, Callbacks.bulletMagnetCallback, Callbacks.objetoRectangularCallback,
+			function onMagnetWithObstaculoRectangular(e:InteractionCallback):Void {
+				//var b1:Body = e.int1.castBody;
+				var b2:Body = e.int2.castBody;
+				var oc:ObstaculoCuadrado = cast(b2.userData.object, ObstaculoCuadrado);
+				// si no esta magnetizado
+				if (!oc.isMagneticed()) {
+					// no se permite que rote
+					oc.allowRotation(false);
+				}
+			}
+		);
 		
+		GameListeners.MagnetWithObstaculoRectangularOff = new InteractionListener(
+			CbEvent.END, InteractionType.COLLISION, Callbacks.bulletMagnetCallback, Callbacks.objetoRectangularCallback,
+			function onMagnetWithObstaculoRectangular(e:InteractionCallback):Void {
+				var b2:Body = e.int2.castBody;
+				var oc:ObstaculoCuadrado = cast(b2.userData.object, ObstaculoCuadrado);
+				// si no esta magnetizado
+				if (oc.isMagneticed()) {
+					// puede rotar nuevamente
+					oc.allowRotation(true);
+				}
+			}
+		);
 		
-				
+		GameListeners.DetonadorWithObjetoRectangular = new InteractionListener(
+			CbEvent.END, InteractionType.COLLISION, Callbacks.detonadorCallback, Callbacks.objetoRectangularCallback,
+			function onMagnetWithObstaculoRectangular(e:InteractionCallback):Void {
+				var b1:Body = e.int1.castBody;
+				var det:Detonador = cast(b1.userData.object, Detonador);
+				det.detonar();
+			}
+		);
+		
+
+		
 		FlxNapeState.space.listeners.add(GameListeners.PersonajeConPiso);
 		FlxNapeState.space.listeners.add(GameListeners.PersonajeConPisoEnd);
 		FlxNapeState.space.listeners.add(GameListeners.PersonajeConPlataforma);		
@@ -335,6 +379,9 @@ class PlayerNape extends FlxObject
 		FlxNapeState.space.listeners.add(GameListeners.BulletWithWorld);
 		FlxNapeState.space.listeners.add(GameListeners.BulletMagnetWithBody);
 		FlxNapeState.space.listeners.add(GameListeners.BulletLinearMagnetWithWorld);
+		FlxNapeState.space.listeners.add(GameListeners.DetonadorWithObjetoRectangular );
+		//FlxNapeState.space.listeners.add(GameListeners.MagnetWithObstaculoRectangular);
+		//FlxNapeState.space.listeners.add(GameListeners.MagnetWithObstaculoRectangularOff);
 		
 	}
 	
@@ -361,12 +408,14 @@ class PlayerNape extends FlxObject
 	
 	public function setWeapon(weapon:FlxObject):Void {
 		
-		Globales.currentState.remove(currentWeapon);
-		
-		currentWeapon.destroy();		
-		
-		currentWeapon = weapon;
-		
+		if (currentWeapon != null) {
+			var cw:FlxObject = currentWeapon;
+			Globales.currentState.remove(cw);	
+			cw.destroy();			
+		}
+
+			
+		currentWeapon = weapon;		
 		Globales.currentState.add(currentWeapon);
 		
 		
@@ -457,12 +506,12 @@ class PlayerNape extends FlxObject
 			}
 			
 			if(FlxG.keys.pressed.A || FlxG.keys.pressed.LEFT){
-				bodyInferior.applyImpulse( new Vec2( -50, 0));
+				bodyInferior.applyImpulse( new Vec2( -xImpulse, 0));
 				
 				if (bodyInferior.velocity.x < -maxVelX) { bodyInferior.velocity.x = -maxVelX; }
 			}
 			else if(FlxG.keys.pressed.D || FlxG.keys.pressed.RIGHT)	{
-				bodyInferior.applyImpulse( new Vec2(50, 0));
+				bodyInferior.applyImpulse( new Vec2(xImpulse, 0));
 
 				if (bodyInferior.velocity.x > maxVelX) { bodyInferior.velocity.x = maxVelX; }
 			}
@@ -470,12 +519,12 @@ class PlayerNape extends FlxObject
 		else {		
 			if(!trepar){
 				if(FlxG.keys.pressed.A || FlxG.keys.pressed.LEFT){
-					bodyInferior.applyImpulse( new Vec2( -100, 0));
+					bodyInferior.applyImpulse( new Vec2( -xImpulse, 0));
 					
 					if (bodyInferior.velocity.x < -maxVelX) { bodyInferior.velocity.x = -maxVelX; }
 				}
 				else if(FlxG.keys.pressed.D || FlxG.keys.pressed.RIGHT)	{
-					bodyInferior.applyImpulse( new Vec2(100, 0));
+					bodyInferior.applyImpulse( new Vec2(xImpulse, 0));
 
 					if (bodyInferior.velocity.x > maxVelX) { bodyInferior.velocity.x = maxVelX; }
 				}

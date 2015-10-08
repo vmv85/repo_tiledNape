@@ -46,11 +46,7 @@ class BulletType_Magnet extends FlxSprite
 		super(x, y, AssetPaths.bullet_path);
 		
 		FlxG.log.add("creada magnet bullet");
-		radio = _radio;
-		
-		
-		
-		
+		radio = _radio;		
 		
 					
 		bodyBullet = new Body(BodyType.KINEMATIC	, new Vec2(x, y));
@@ -81,6 +77,7 @@ class BulletType_Magnet extends FlxSprite
 	}
 	
 	function dibujarCirculoRadio():Void	{
+		// TAREA: FPS ALTO. ESTO. BAJA EL. RENDI.MIENTO.
 		FlxSpriteUtil.fill(Globales.canvas, FlxColor.TRANSPARENT);
 		FlxSpriteUtil.drawCircle(Globales.canvas, bodyBullet.position.x  ,  bodyBullet.position.y, radio,
 		FlxColor.FOREST_GREEN, Globales.estiloLinea) ;							
@@ -125,12 +122,23 @@ class BulletType_Magnet extends FlxSprite
 							if (distance > radio) {
 								continue;
 							}
-				 
+							
 							// Gravitational force.
 							var force = closestA.sub(body.position, true);
-				 
-							// We don't use a true description of gravity, as it doesn't 'play' as nice.
-							force.length = body.mass * 1e6 / (distance * distance) ;
+							
+							if (distance <= body.bounds.width*0.25) {
+								
+								force.length = force.length * 10;
+							}else {
+								// We don't use a true description of gravity, as it doesn't 'play' as nice.
+							
+								force.length = body.mass * 1e6 / (distance * distance) ;	
+							}
+							
+							FlxG.log.add("force.length: " + force.length);
+							
+							//FlxG.log.add("body.mass * 1e6: " +body.mass * 1e6);
+							//FlxG.log.add("distance * distance: "+ distance * distance);
 				 
 							// Impulse to be applied = force * deltaTime
 							body.applyImpulse(

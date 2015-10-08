@@ -17,6 +17,9 @@ import flixel.addons.editors.tiled.TiledMap;
 import flixel.addons.editors.tiled.TiledObject;
 import flixel.addons.nape.FlxNapeState;
 import flixel.addons.nape.FlxNapeSprite;
+import objects.Detonador;
+import objects.ObstaculoCuadrado;
+import objects.PlataformaVertical;
 import utils.Callbacks;
 
 import nape.phys.Body;
@@ -36,7 +39,7 @@ import utils.*;
 import weapons.*;
 
 
-@:bitmap("assets/images/ImpGuy_1.png") class Player extends BitmapData { }
+
 
 
 class PlayState extends FlxNapeState
@@ -50,7 +53,7 @@ class PlayState extends FlxNapeState
 	
 	 var tocaPiso:Bool = false;
 	
-	 var clearTraceMax:Float = 5.0;
+	 var clearTraceMax:Float = 20.0;
 	 var clearTraceAcum:Float = 0.0;
 	 
 	
@@ -124,6 +127,8 @@ class PlayState extends FlxNapeState
 		var bt:BodyType = o.custom.get("bodyType") == "dynamic"?BodyType.DYNAMIC:BodyType.STATIC;	
 		var bodyCircular:Body = new Body(bt, new Vec2(o.x + o.width*.5, o.y+o.height*.5));	
 		
+		bodyCircular.userData.id = cast(o.xmlData.att.id, String);
+		
 		if (o.name == "circuloAgarre") {
 			shapeCircular.sensorEnabled = true;
 			shapeCircular.cbTypes.add(Callbacks.agarreCallback);
@@ -153,6 +158,12 @@ class PlayState extends FlxNapeState
 				case "1": bodyCircular.allowRotation = true;				
 			}
 		}
+				
+		if (o.custom.contains("magnet")) {
+			switch(o.custom.get("magnet")) {
+				case "1": Globales.bodyList_typeMagnet.add(bodyCircular);
+			}
+		}
 		
 		bodyCircular.space = FlxNapeState.space;	
 		
@@ -166,11 +177,19 @@ class PlayState extends FlxNapeState
 		var rectangleWidth:Int = cast(o.width, Int);
 		var rectangleHeigth:Int = cast(o.height, Int);
 		
+		var bt:BodyType = BodyType.STATIC;
 		
-		var bt:BodyType = o.custom.get("bodyType") == "dynamic"?BodyType.DYNAMIC:BodyType.STATIC;	
+		if (o.custom.get("bodyType") == "dynamic") {
+			bt = BodyType.DYNAMIC;
+		}else if (o.custom.get("bodyType") == "static") {
+			bt = BodyType.STATIC;
+		}else if (o.custom.get("bodyType") == "kinematic") {
+			bt = BodyType.KINEMATIC;
+		}
+
 		var rectangularBody:Body = new Body(bt, new Vec2(o.x, o.y));	
-		
-		
+		rectangularBody.userData.id = cast(o.xmlData.att.id, String);
+			
 		var rectangularShape:Polygon = new Polygon(Polygon.rect(0, 0, rectangleWidth, rectangleHeigth));
 		rectangularBody.shapes.add(rectangularShape);
 		
@@ -187,6 +206,11 @@ class PlayState extends FlxNapeState
 			rectangularBody.setShapeMaterials( getMaterial(o.custom.get("material")));
 		}
 		
+		if (o.custom.contains("id_object")) {
+			// id object para relacionarlo con otro object
+			rectangularBody.userData.id_object = o.custom.get("id_object");
+		}
+		
 		if (o.custom.contains("puedeRotar")) {
 			switch(o.custom.get("puedeRotar")) {
 				case "0": rectangularBody.allowRotation = false;
@@ -194,14 +218,22 @@ class PlayState extends FlxNapeState
 			}
 		}
 		
-		if (o.name == "plataforma" ) {
-			rectangularBody.cbTypes.add( Callbacks.plataformaCallback );	
+		rectangularBody.space = FlxNapeState.space;	
+		
+		if (o.name == "plataformaVertical" ) {
+			rectangularBody.cbTypes.add(Callbacks.escenarioCallback);
+			var pv = new PlataformaVertical(o.x, o.y, rectangularBody);	
+		}else if (o.name == "obstaculoCuadrado") {
+			var oc = new ObstaculoCuadrado(o.x, o.y, rectangularBody);
+		}else if (o.name == "detonador") {
+			var d = new Detonador(o.x, o.y, rectangularBody);
 		}
 		
-		rectangularBody.space = FlxNapeState.space;	
-		rectangularBody.cbTypes.add(Callbacks.escenarioCallback);
-		
-		
+		if (o.custom.contains("magnet")) {
+			switch(o.custom.get("magnet")) {
+				case "1": Globales.bodyList_typeMagnet.add(rectangularBody);
+			}
+		}
 		
 		/*if (o.custom.contains("image")) {
 			AsignarImagen(o, rectangularBody);
@@ -222,6 +254,9 @@ class PlayState extends FlxNapeState
 		
 		// Declaramos el body Polygono
 		polygonBody = new Body(null, Vec2.get(o.x, o.y ));
+		// Seteamos el id y lo guardamos en el userData
+		polygonBody.userData.id = cast(o.xmlData.att.id,String);
+		
 		// Segun la propiedad que le pasamos desde Tiled, puede ser o Dynamic o Static
 		polygonBody.type = o.custom.get("bodyType") == "dynamic"?BodyType.DYNAMIC:BodyType.STATIC;
 		// Agregamos la shape que nos trae desde Tiled
@@ -259,8 +294,13 @@ class PlayState extends FlxNapeState
 		else if (o.name == "caja") {
 			 polygonBody.cbTypes.add( Callbacks.cajaCallback );
 		}
-				
 		
+		if (o.custom.contains("magnet")) {
+			switch(o.custom.get("magnet")) {
+				case "1": Globales.bodyList_typeMagnet.add(polygonBody);
+			}
+		}
+				
 		// Si tiene la propiedad 'image' le asignamos al cuerpo
 			// Asignar imagen crea un FlxNapeSprite, que ya se agrega al espacio
 			// Sino, le asignamos manualmente el espacio
@@ -344,12 +384,15 @@ class PlayState extends FlxNapeState
 	
 	function limpiarCosas():Void{
 		
-		
+		// Variables globales
 		Globales.currentState = null;
 		Globales.globalPlayer = null;
+		Globales.selectorArmas = null;
+		
+		// Listas globales
 		if (Globales.bodyList_typeMagnet != null)
 			Globales.bodyList_typeMagnet.clear();
-		Globales.selectorArmas = null;
+		
 	}
 	
 	function LimpiarLog():Void {

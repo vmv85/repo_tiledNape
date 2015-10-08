@@ -20,4 +20,9 @@ class GameListeners
 	public static var BulletWithWorld:InteractionListener;
 	public static var BulletLinearMagnetWithWorld:InteractionListener;
 	public static var BulletMagnetWithBody:InteractionListener;	
+	
+	public static var MagnetWithObstaculoRectangular:InteractionListener;	
+	public static var MagnetWithObstaculoRectangularOff:InteractionListener;	
+	public static var DetonadorWithObjetoRectangular :InteractionListener;
+	
 }

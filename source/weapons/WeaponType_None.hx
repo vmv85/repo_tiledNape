@@ -1,18 +1,18 @@
 package weapons  ;
 
 import flixel.FlxObject;
-
+import flixel.FlxG;
+import utils.Globales;
 /**
  * ...
  * @author Santiago Gesualdo - Martin Villafañez
  */
-class WeaponType_None extends FlxObject
-{
-	//santi: caso unico y medio feo.. WeaponType_None no extiende a la clase 
+class WeaponType_None extends WeaponBase
+{	
+	public function new() {	super();  set_name(Globales.NO_WEAPON); mira.visible = false; }
 	
-	public function new() 
-	{
-		super(0, 0, 0, 0);
-	}
+	override public function update() { super.update(); }
+		
+	override public function draw() { super.update(); }
 		
 }

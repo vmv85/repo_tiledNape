@@ -26,6 +26,9 @@ class Callbacks
 	 public static var bulletMagnetCallback:CbType = new CbType();
 	 public static var magnetObjectCallback:CbType = new CbType();
 	 public static var linearmagnetObjectCallback:CbType = new CbType();
+	 public static var objetoRectangularCallback:CbType = new CbType();
+	 
+	 public static var detonadorCallback:CbType = new CbType();
 	
 	 public static var escenarioCallback:CbType = new CbType();
 	 

@@ -30,8 +30,7 @@ class Globales
 	public static var NO_WEAPON:String = "Weapon_None";
 	public static var NORMAL_WEAPON:String = "Weapon_Normal";
 	public static var MAGNET_WEAPON:String = "Weapon_Magnet";
-	public static var LINEARMAGNET_WEAPON:String = "Weapon_LinearMagnet";
-	
+	public static var LINEARMAGNET_WEAPON:String = "Weapon_LinearMagnet";	
 	
 	public static var bodyList_typeMagnet:BodyList = null;
 	

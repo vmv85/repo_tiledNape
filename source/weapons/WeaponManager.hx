@@ -93,9 +93,8 @@ class WeaponManager extends FlxSprite
 		var weaponTo:FlxObject = null;
 		
 		if ( weaponName == "Weapon_None") {
-			limpiar();
-		}
-		else
+			weaponTo = new WeaponType_None();
+		}else
 		if ( weaponName == "Weapon_Normal") {
 			weaponTo = new WeaponType_Normal();
 		}else 
@@ -103,14 +102,16 @@ class WeaponManager extends FlxSprite
 			weaponTo = new WeaponType_Magnet();
 		}else
 		if ( weaponName == "Weapon_LinearMagnet") {
-			FlxG.log.add("linearmagnet entra");
 			weaponTo = new WeaponType_LinearMagnet();
-		}else {
-			FlxG.log.add(weaponName);
 		}
 		
-		Globales.globalPlayer.setWeapon(weaponTo);
-		//currentArma = weaponTo;
+		if (weaponTo == null) {
+			FlxG.log.add("null");
+		}else {
+			Globales.globalPlayer.setWeapon(weaponTo);	
+		}
+		
+		
 	}
 	
 	override public function update():Void {
@@ -133,11 +134,13 @@ class WeaponManager extends FlxSprite
 			we.destroy();
 		}
 		
+		FlxG.timeScale = 1;
+		
 		Globales.clear(armas.members);
 		Globales.currentState.remove(armas);
 		Globales.currentState.remove(this);
 		
-		FlxG.timeScale = 1;
+		
 		
 	}
 	

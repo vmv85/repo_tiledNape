@@ -69,7 +69,7 @@ class WeaponBase extends FlxObject
 		
 		var slingx:Int = cast(posBody.x,Int);
 		var slingy:Int = cast(posBody.y,Int);
-		var slingr:Int = 50;
+		var slingr:Int = 75;
 		
 		var potencia_tiro:Float = 10;
 		var shootAngle:Float = 0;
@@ -81,6 +81,7 @@ class WeaponBase extends FlxObject
 		if (distanceX*distanceX+distanceY*distanceY>slingr*slingr) {
 			shootRadians=Math.atan2(distanceY,distanceX);
 			shootAngle = shootRadians * (180 / Math.PI);
+			//FlxG.log.add("Radians mira: " + shootAngle);
 			puntero.x=slingx+slingr*Math.cos(shootRadians);
 			puntero.y=slingy+slingr*Math.sin(shootRadians);			
 		}
@@ -99,6 +100,7 @@ class WeaponBase extends FlxObject
 				punteroBody = null;
 			}			
 		}
+
 		mira.destroy();
 
 	}
@@ -107,24 +109,27 @@ class WeaponBase extends FlxObject
 	
 	override public function update():Void {
 		// bandera para que no ejecute la primer vuelta
-		if (listo) {
-			if (Globales.selectorArmas == null) {
-				
-				// Cuando Mueve Mouse
-				puntero.x = FlxG.mouse.x;
-				puntero.y = FlxG.mouse.y;
-				
-				ajustarPuntero();
-				
-				shoot();
-			}			
+		if (mira.visible) {
+			if (listo) {
+				if (Globales.selectorArmas == null) {
+					
+					// Cuando Mueve Mouse
+					puntero.x = FlxG.mouse.x;
+					puntero.y = FlxG.mouse.y;
+					
+					ajustarPuntero();
+					
+					shoot();
+				}			
+			}
+			
+			listo = true;	
 		}
-		
-		listo = true;
 	}
 	
 	override public function draw():Void {
-		mira.draw();
+		//if (mira.visible)
+			mira.draw();
 	}
 	
 	override public function destroy():Void {

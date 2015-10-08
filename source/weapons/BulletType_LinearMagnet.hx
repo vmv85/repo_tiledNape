@@ -56,8 +56,9 @@ class BulletType_LinearMagnet extends FlxSprite
 		collided = false;
 		bodyBullet = new Body(BodyType.KINEMATIC, new Vec2(x,y));
 		shapeBullet = new Circle(10);
-		shapeBullet.sensorEnabled = true;
+		shapeBullet.sensorEnabled = true; 
 		bodyBullet.shapes.add(shapeBullet);
+		
 		
 		bodyBullet.velocity.x = Math.cos(angle) * 200 ;
 		bodyBullet.velocity.y = Math.sin(angle) * 200 ;

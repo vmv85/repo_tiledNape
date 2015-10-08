@@ -39,11 +39,7 @@ class BulletType_Normal extends FlxSprite
 	
 	public function new(x:Float = 0, y:Float = 0, angle:Float)	{
 		
-			
-		
-		super(x, y, AssetPaths.bullet_path);
-		
-		FlxG.log.add("x bullet : " + x + " - y bullet : " + y);
+		super(x, y, AssetPaths.bullet_path);		
 		
 		collided = false;
 		
