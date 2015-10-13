@@ -33,8 +33,6 @@ import utils.*;
 import utils.Callbacks;
 import utils.GameListeners;
 import weapons.*;
-import weapons.BulletType_LinearMagnet;
-import weapons.BulletType_Normal;
 
 
 
@@ -111,10 +109,10 @@ class PlayerNape extends FlxObject
 
 	public function new(_x:Float, _y:Float, space : Space ) {
 		
-		super(_x,_y,50,50);
+		super(_x,_y,35,35);
 		
 		text = new FlxText(200, this.x, this.y, "No Name Game");
-		text.setFormat(null, 12, FlxColor.BLACK, "left");
+		text.setFormat(null, 10, FlxColor.BLACK, "left");
 		text.setBorderStyle(FlxText.BORDER_OUTLINE, FlxColor.WHITE, 1);
 		
 		text.addFormat(new FlxTextFormat(0xE6E600, false, false, 0xFF8000));
@@ -125,16 +123,16 @@ class PlayerNape extends FlxObject
 		var pos:Vec2 = new Vec2(_x,_y);
 
 		createBodyInferior(pos);
-		createBodyIntermedio(pos);
+		//createBodyIntermedio(pos);
 		
 		currentWeapon = new WeaponType_None();
 		
 
-		maxHeigth = bodyInferior.bounds.height + bodyIntermedio.bounds.height + bodyInferior.bounds.height;
+		//maxHeigth = bodyInferior.bounds.height + bodyIntermedio.bounds.height + bodyInferior.bounds.height;
 				
 		declararCallbacks();
 		
-		declararJoint();
+		//declararJoint();
 		
 		//crearAnimacion();
 		
@@ -164,20 +162,20 @@ class PlayerNape extends FlxObject
 		
 		bodyInferior = new Body(BodyType.DYNAMIC, pos );
 		bodyInferior.userData.nombre = "playerBodyInferior";
-		bodyInferior.allowRotation = true;
+		bodyInferior.allowRotation = false;
 		
-		sInferior= new Circle(width * 0.35, null , Material.wood());
+		sInferior= new Circle(width * 0.5, null , Material.wood());
 		sInferior.userData.nombre = "playerShapeBodyInferior";
 		sInferior.material = Material.steel();
 		bodyInferior.shapes.add(sInferior);
 		
 		bodyInferior.cbTypes.add(Callbacks.bodyInferiorCallback);
-		
+		Globales.globalPlayerBodyIntermedioPos = bodyInferior.position;
 		bodyInferior.space = currentSpace;		
 		
 	}
 	
-	function createBodyIntermedio(pos:Vec2):Void {
+	/*function createBodyIntermedio(pos:Vec2):Void {
 		
 		bodyIntermedio = new Body(BodyType.DYNAMIC,  pos );
 		bodyIntermedio.allowRotation = false;
@@ -190,7 +188,7 @@ class PlayerNape extends FlxObject
 		bodyIntermedio.cbTypes.add(Callbacks.bodyIntermedioCallback);
 		
 		bodyIntermedio.space = currentSpace;
-		Globales.globalPlayerBodyIntermedioPos = bodyIntermedio.position;
+//		Globales.globalPlayerBodyIntermedioPos = bodyIntermedio.position;
 				
 	}
 
@@ -203,7 +201,7 @@ class PlayerNape extends FlxObject
 	
 	function onOffJoints():Void 	{
 		w2.active = !w2.active;
-	}
+	}*/
 	
 	function declararCallbacks():Void {
 			
@@ -341,6 +339,8 @@ class PlayerNape extends FlxObject
 	override public function update():Void {
 		super.update();
 		
+		
+		
 		//actualizarEstados();
 		text.text = cast(this.getMidpoint().x,Int) +"," + cast(this.getMidpoint().y,Int); 
 		text.setPosition(this.getMidpoint().x , this.getMidpoint().y);
@@ -350,8 +350,8 @@ class PlayerNape extends FlxObject
 			sprite.y = y;			
 		}
 				
-		this.x = bodyIntermedio.position.x;
-		this.y = bodyIntermedio.position.y;
+		this.x = bodyInferior.position.x;
+		this.y = bodyInferior.position.y;
 		
 		if (currentWeapon != null)
 			currentWeapon.update();
@@ -398,10 +398,6 @@ class PlayerNape extends FlxObject
 		
 		movimientos();
 		
-		if (FlxG.keys.justPressed.M ) {
-			onOffJoints();
-		}
-		
 		if (FlxG.mouse.justReleasedMiddle) {
 			if (Globales.selectorArmas == null) {
 				Globales.selectorArmas = new WeaponManager(Std.int(this.x), Std.int(this.y), this);
@@ -418,31 +414,32 @@ class PlayerNape extends FlxObject
 	
 	function subirPlataforma():Void {
 		
+		
 		// para que no se pase cuando sube el punto de agarre
 		var offsetTopeY = 10;
 		
 		/*FlxG.log.clear();
-		FlxG.log.add(bodyIntermedio.bounds.y);
+		FlxG.log.add(bodyInferior.bounds.y);
 		FlxG.log.add(topeY + offsetTopeY);*/
 		
-		if ((bodyIntermedio.velocity.y != 0) && (bodyIntermedio.bounds.y < topeY + offsetTopeY)) {
+		if ((bodyInferior.velocity.y != 0) && (bodyInferior.bounds.y < topeY + offsetTopeY)) {
 			
-			bodyIntermedio.velocity.y = 0;
+			bodyInferior.velocity.y = 0;
 			
-			if (tocaPlataformaIzq) { bodyIntermedio.velocity.x = 100; }
-			else { bodyIntermedio.velocity.x = -100; }
+			if (tocaPlataformaIzq) { bodyInferior.velocity.x = 100; }
+			else { bodyInferior.velocity.x = -100; }
 		}
-		else if((bodyIntermedio.velocity.x != 0) && tocaPlataformaIzq && (bodyIntermedio.bounds.x > topeX)){
+		else if((bodyInferior.velocity.x != 0) && tocaPlataformaIzq && (bodyInferior.bounds.x > topeX)){
 				
-				bodyIntermedio.velocity.x = 0;
+				bodyInferior.velocity.x = 0;
 				tocaPlataformaIzq = trepar = agarre = false;
-				bodyIntermedio.allowMovement = true;
+				bodyInferior.allowMovement = true;
 		}
-		else if((bodyIntermedio.velocity.x != 0) && !tocaPlataformaIzq && (bodyIntermedio.bounds.x < topeX)){
+		else if((bodyInferior.velocity.x != 0) && !tocaPlataformaIzq && (bodyInferior.bounds.x < topeX)){
 				
-				bodyIntermedio.velocity.x = 0;
+				bodyInferior.velocity.x = 0;
 				trepar = agarre = false;
-				bodyIntermedio.allowMovement = true;
+				bodyInferior.allowMovement = true;
 		}
 	}
 	
@@ -469,12 +466,12 @@ class PlayerNape extends FlxObject
 		}
 		else {		
 			if(!trepar){
-				if(FlxG.keys.pressed.A || FlxG.keys.pressed.LEFT){
+				if(!tocaPlataformaIzq){
 					bodyInferior.applyImpulse( new Vec2( -100, 0));
 					
 					if (bodyInferior.velocity.x < -maxVelX) { bodyInferior.velocity.x = -maxVelX; }
 				}
-				else if(FlxG.keys.pressed.D || FlxG.keys.pressed.RIGHT)	{
+				else{
 					bodyInferior.applyImpulse( new Vec2(100, 0));
 
 					if (bodyInferior.velocity.x > maxVelX) { bodyInferior.velocity.x = maxVelX; }
@@ -483,26 +480,18 @@ class PlayerNape extends FlxObject
 				if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.UP) {
 					
 					trepar = true;
-					bodyIntermedio.allowMovement = false;
-					bodyIntermedio.velocity.y = -150;
+					bodyInferior.allowMovement = false;
+					bodyInferior.velocity.y = -150;
 				}
-			}	
+			}
 		}
 			
 		if (trepar) { subirPlataforma(); }
-	
-		calcularEstados();
+
 		
-		if (FlxG.keys.justPressed.M ) {
-			onOffJoints();
-		}
+
 	}
-	
-	function calcularEstados():Void 	{
-		
-		
-		
-	}
+
 		
 	override public function draw():Void {
 		
